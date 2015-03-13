@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<h3>Unfollowed:</h3>
+
+{% for u in unf %}
+    <img src="{{ u.profile_picture }}" alt=""/>
+    <p>
+        {{ u.username }} <br/>
+        {{ u.full_name }}
+    </p>
+{% endfor %}
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<h3>Following:</h3>
+Toplam: {{ ff | length }}
+<br/>
+{% for f in ff %}
+    <div class="clearfix" style="width: 100%">
+    <img src="{{ f.profile_picture }}" alt=""/>
+    <p>
+        {{ f.username }} <br/>
+        {{ f.full_name }}
+    </p>
+    <div class="clearfix"></div>
+    </div>
+    <hr/>
+
+{% endfor %}
+</body>
+</html>

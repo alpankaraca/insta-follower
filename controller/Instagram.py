@@ -2,11 +2,12 @@ import json
 import urllib
 import urllib2
 from libs.crossdomain import crossdomain
+from model.Follower import User
 from model.Tag import Tag
 from model.Tracking import Tracker
 
 __author__ = 'cankemik'
-from flask import Blueprint, render_template, abort, current_app, request, session, redirect, jsonify
+from flask import Blueprint, render_template, abort, current_app, request, session, redirect, jsonify, url_for
 from instagram import InstagramAPI
 
 instagram = Blueprint('instagram', __name__, template_folder='templates')
@@ -34,7 +35,7 @@ def main():
     }
     api = InstagramAPI(**instaConfig)
     url = api.get_authorize_url(scope=["likes", "comments"])
-    return "<a href='" + url + "'>url</a>"
+    return redirect(url)
 
 
 @instagram.route('/instagram_callback')
@@ -53,7 +54,15 @@ def instagram_callback():
         session['instagram_access_token'] = access_token
         session['instagram_user'] = user
 
-        return "<script type='text/javascript'>window.close();</script>"
+        try:
+            u = User.objects.get(access_token=access_token)
+        except:
+            u = User()
+            u.details = user
+            u.access_token = access_token
+            u.save()
+
+        return redirect(url_for('instagram.get_followers'))
 
     else:
         return "Uhoh no code provided"
@@ -65,7 +74,7 @@ def searchbytag():
     pdata = request.args.get("tag").split(",")
     if request.method == "POST":
         pdata = json.loads(request.data)
-    values = {"access_token": current_app.config.get('INSTAGRAM_ACCESS_TOKEN'), "count": "10000000000000000",
+    values = {"access_token": session.get('instagram_access_token'), "count": "10000000000000000",
               'client_id': current_app.config.get('INSTAGRAM_CLIENT_ID'),
               'client_secret': current_app.config.get('INSTAGRAM_CLIENT_SECRET')}
     data = urllib.urlencode(values)
@@ -113,7 +122,7 @@ def get_tags():
             if len(i.images) > 0:
                 print "high"
             else:
-                api = InstagramAPI(access_token=current_app.config.get('INSTAGRAM_ACCESS_TOKEN'))
+                api = InstagramAPI(access_token=session.get('instagram_access_token'))
                 api.user_search("cankemik")
                 print "low"
     except Exception as e:
@@ -124,23 +133,23 @@ def get_tags():
 
 @instagram.route('/get-followers', methods=["POST", "GET"])
 def get_followers():
-    api = InstagramAPI(access_token=current_app.config.get('INSTAGRAM_ACCESS_TOKEN'))
-    user = api.user_search("alpan")[0]
-    print dir(user)
-    print user
-    followers = api.user_followed_by(user.id)
-    print followers
+
+    instagram_user = User.objects.get(access_token=session.get('instagram_access_token'))
+
+    api = InstagramAPI(access_token=session.get('instagram_access_token'))
+    followers = api.user_followed_by(session['instagram_user'].get("id"))
+    #print followers
     f_arr = []
-    print len(followers[0])
     for u in followers[0]:
         f_arr.append(u)
     ff = f_arr
 
-    values = {"access_token": current_app.config.get('INSTAGRAM_ACCESS_TOKEN'), "count": "10000000000000000",
+
+    values = {"access_token": session.get('instagram_access_token'), "count": "10000000000000000",
               'client_id': current_app.config.get('INSTAGRAM_CLIENT_ID'),
               'client_secret': current_app.config.get('INSTAGRAM_CLIENT_SECRET')}
     data = urllib.urlencode(values)
-    url = 'https://api.instagram.com/v1/users/' + user.id + '/followed-by'
+    url = 'https://api.instagram.com/v1/users/' + session['instagram_user'].get("id") + '/followed-by'
     callback = json.loads(urllib.urlopen(url + "?%s" % data).read())
 
     users = []
@@ -168,7 +177,7 @@ def get_followers():
 
     unfollowed = []
 
-    for f in Follower.objects.all():
+    for f in instagram_user.followers:
         if f.username not in usernames:
             unfollowed.append(f)
             f.following = False
@@ -176,14 +185,16 @@ def get_followers():
 
     for user in users:
         try:
-            u = Follower.objects.get(username=user[u'username'])
+            u = User.objects.get(details__instagram_access_token=session['instagram_access_token'], followers__insta_id=user[u'id'])
         except:
             u = Follower()
             u.username = user[u'username']
             u.profile_picture = user[u'profile_picture']
             u.insta_id = user[u'id']
             u.full_name = user[u'full_name']
-            u.save()
+            instagram_user.followers.append(u)
+            instagram_user.save()
+
 
 
     return render_template('followers.html', ff=users, unf=unfollowed)
@@ -194,6 +205,12 @@ def get_followers():
 
 
 
+@instagram.route("/logout", methods=['GET', 'POST'])
+def logout():
+    print "sd"
+    del session['instagram_user']
+    del session['instagram_access_token']
+    return redirect(url_for('main.welcome'))
 
 
 

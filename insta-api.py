@@ -4,7 +4,7 @@ from flask.ext.mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask.ext.mongomyadmin import MongoMyAdmin
 from controller.Instagram import instagram
 from controller.Main import main
-from model.Follower import Follower
+from model.Follower import Follower, User
 from flask.ext.admin.contrib.mongoengine import ModelView
 
 
@@ -14,15 +14,10 @@ db = MongoEngine(app)
 m = MongoMyAdmin(app)
 app.session_interface = MongoEngineSessionInterface(db)
 admin = Admin(app)
-admin.add_view(ModelView(Follower, "Follower"))
+admin.add_view(ModelView(User, "User"))
 
 app.register_blueprint(main, url_prefix="/")
 app.register_blueprint(instagram, url_prefix="/instagram")
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
 
 
 if __name__ == '__main__':

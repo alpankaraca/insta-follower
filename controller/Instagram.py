@@ -167,7 +167,7 @@ def get_followers():
         except:
             break
 
-    print json.dumps(users)
+    #print json.dumps(users)
 
     usernames =[]
     for uu in users:

@@ -181,7 +181,7 @@ def get_followers():
         if f.username not in usernames:
             unfollowed.append(f)
             f.following = False
-            f.save()
+            instagram_user.save()
 
     for user in users:
         try:

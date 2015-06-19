@@ -1,36 +1,114 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<a href="logout" style="float: right;">çıkış</a>
-<h3>Unfollowed:</h3>
+    <head lang="en">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
 
-{% for u in unf %}
-    <img src="{{ u.profile_picture }}" alt=""/>
-    <p>
-        {{ u.username }} <br/>
-        {{ u.full_name }}
-    </p>
-{% endfor %}
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" href="/static/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="/static/css/fix.css"/>
 
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-<h3>Following:</h3>
-Toplam: {{ ff | length }}
-<br/>
-{% for f in ff %}
-    <div class="clearfix" style="width: 100%">
-    <img src="{{ f.profile_picture }}" alt=""/>
-    <p>
-        {{ f.username }} <br/>
-        {{ f.full_name }}
-    </p>
-    <div class="clearfix"></div>
-    </div>
-    <hr/>
+        <title></title>
+    </head>
+    <body>
 
-{% endfor %}
-</body>
+        <nav class="navbar navbar-default header" style="margin-bottom: 0;background: #fff">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">InstagramUnfollower</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="padding: 32px 0">
+
+                    <ul class="nav navbar-nav navbar-right text-center">
+                        <li><a href="logout">Çıkış</a></li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+
+        <div class="jumbotron header" style="background-color: #fafafa">
+            <div class="container">
+                <div class="col-sm-4 text-center">
+                    <img src="{{ user.profile_picture }}" alt="{{ user.username }}, {{ user.bio }}" class="img-circle" style="margin-top: -7px;">
+                </div>
+                <div class="col-sm-4 profile-info">
+                    <h1 class="mt-0 mb-0"><a href="https://instagram.com/{{ user.username }}">{{ user.username }}</a></h1>
+                    <h2 class="mt-14 mb-0">{{ user.bio}}</h2>
+                    <h2 class="mt-17 mb-0">
+                        <a class="counts-links" href=""><b>{{ user.counts.media }}</b> gönderi</a>
+                        <a class="counts-links" href=""><b>{{ user.counts.followed_by }}</b> takipçi</a>
+                        <a class="counts-links" href=""><b>{{ user.counts.follows }}</b> takip</a>
+                    </h2>
+                </div>
+                <div class="col-sm-4 news-olds">
+                    <div class="hede" style="display: none">
+                        <h2 class="mt-0 nft">New Followers:</h2>
+                        <div class="newfollowers"></div>
+                        <h2 class="mt-0 uft">UnFollowers:</h2>
+                        <div class="unfollowers"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container content">
+            {% for img in recent %}
+                <div class="col-sm-6 col-md-4 text-center instagram-image-thumb">
+                    <div style="overflow: hidden;position:relative;">
+                        <img src="{{ img.thumb }}" alt=""/>
+                        <a href="{{ img.link }}" class="img-hover"></a>
+                        <div class="likes-and-comments center-block col-xs-5">
+                            <div class="pull-left">
+                                <i class="fa fa-heart"></i> {{ img.likes }}
+                            </div>
+                            <div class="pull-right">
+                                <i class="fa fa-comment"></i> {{ img.comments }}
+                            </div>
+                        </div>
+                        <p class="caption">{{ img.caption }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </body>
+
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script>
+        $.getJSON( "get-followers", function( data ) {
+            console.log(data);
+            var news = data.newfollowed,
+                olds = data.unfollowed;
+
+            for (var i in news) {
+                $('.newfollowers').append('<img src="'+ news[i]['profile_picture'] +'" title="'+ news[i]['username'] +'" class="img-circle" style="width:30px">');
+            }
+            for (var i in olds) {
+                $('.unfollowers').append('<img src="'+ olds[i]['profile_picture'] +'" title="'+ olds[i]['username'] +'" class="img-circle" style="width:30px">');
+            }
+            $('.hede').fadeIn()
+            $('.nft').append(' ('+ news.length +')');
+            $('.uft').append(' ('+ olds.length +')');
+         });
+    </script>
 </html>

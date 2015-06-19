@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import urllib
 import urllib2
@@ -62,7 +63,7 @@ def instagram_callback():
             u.access_token = access_token
             u.save()
 
-        return redirect(url_for('instagram.get_followers'))
+        return redirect(url_for('instagram.profile'))
 
     else:
         return "Uhoh no code provided"
@@ -131,29 +132,55 @@ def get_tags():
     return "ok"
 
 
-@instagram.route('/get-followers', methods=["POST", "GET"])
-def get_followers():
+@instagram.route('/profile', methods=["POST", "GET"])
+def profile():
 
     instagram_user = User.objects.get(access_token=session.get('instagram_access_token'))
 
     api = InstagramAPI(access_token=session.get('instagram_access_token'))
-    followers = api.user_followed_by(session['instagram_user'].get("id"))
-    #print followers
-    f_arr = []
-    for u in followers[0]:
-        f_arr.append(u)
-    ff = f_arr
+    user_id = session['instagram_user'].get("id")
+    user = api.user(user_id)
+    recent, next = api.user_recent_media(user_id)
+    photos = []
+    for media in recent:
+        try:
+            photos.append({
+                'type': media.type,
+                'href': media.images['standard_resolution'].url,
+                'thumb': media.images['low_resolution'].url,
+                'likes': media.like_count,
+                'comments': media.comment_count,
+                'caption': media.caption.text or "",
+                'link': media.link
+            })
+        except:
+            photos.append({
+                'type': media.type,
+                'href': media.images['standard_resolution'].url,
+                'thumb': media.images['low_resolution'].url,
+                'likes': media.like_count,
+                'comments': media.comment_count,
+                'caption': "",
+                'link': media.link
+            })
+
+    return render_template('followers.html', user=user, recent=photos)
 
 
+
+@instagram.route('/get-followers', methods=["POST", "GET"])
+def get_followers():
+
+    instagram_user = User.objects.get(access_token=session.get('instagram_access_token'))
+    api = InstagramAPI(access_token=session.get('instagram_access_token'))
+
+    # Get live followers as users
     values = {"access_token": session.get('instagram_access_token'), "count": "10000000000000000",
               'client_id': current_app.config.get('INSTAGRAM_CLIENT_ID'),
               'client_secret': current_app.config.get('INSTAGRAM_CLIENT_SECRET')}
     data = urllib.urlencode(values)
     url = 'https://api.instagram.com/v1/users/' + session['instagram_user'].get("id") + '/followed-by'
     callback = json.loads(urllib.urlopen(url + "?%s" % data).read())
-
-    users = []
-
     users = callback[u'data']
     uurrll = callback[u'pagination'][u'next_url']
 
@@ -162,42 +189,44 @@ def get_followers():
         try:
             users += daataa[u'data']
             uurrll = daataa[u'pagination'][u'next_url']
-            print uurrll
-
+            #print uurrll
         except:
             break
 
-    #print json.dumps(users)
-
-    usernames =[]
+    ids = []
     for uu in users:
-        usernames.append(uu[u'username'])
-
-    from model.Follower import Follower
+        #print uu
+        ids.append(uu[u'id'])
 
     unfollowed = []
-
-    for f in instagram_user.followers:
-        if f.username not in usernames:
+    for index, f in enumerate(instagram_user.followers):
+        if f.insta_id not in ids:
+            print f.insta_id, f.username
+            f.date = datetime.now()
+            instagram_user.followers.pop(index)
             unfollowed.append(f)
-            f.following = False
-            instagram_user.save()
+    instagram_user.followers_ids = ids
+    instagram_user.save()
 
-    for user in users:
-        try:
-            u = User.objects.get(details__instagram_access_token=session['instagram_access_token'], followers__insta_id=user[u'id'])
-        except:
+    from model.Follower import Follower
+    new_followed = []
+
+    for index, id in enumerate(ids):
+        if id not in instagram_user.followers_ids:
+            user = users[index]
             u = Follower()
             u.username = user[u'username']
             u.profile_picture = user[u'profile_picture']
             u.insta_id = user[u'id']
             u.full_name = user[u'full_name']
+            new_followed.append(u.to_json())
             instagram_user.followers.append(u)
-            instagram_user.save()
+    instagram_user.save()
 
+    print new_followed
+    print unfollowed
 
-
-    return render_template('followers.html', ff=users, unf=unfollowed)
+    return json.dumps({"newfollowed": new_followed, "unfollowed": unfollowed})
 
 
 

@@ -15,6 +15,7 @@ m = MongoMyAdmin(app)
 app.session_interface = MongoEngineSessionInterface(db)
 admin = Admin(app)
 admin.add_view(ModelView(User, "User"))
+admin.add_view(ModelView(Follower, "Follower"))
 
 app.register_blueprint(main, url_prefix="/")
 app.register_blueprint(instagram, url_prefix="/instagram")

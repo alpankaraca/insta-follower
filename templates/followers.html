@@ -13,7 +13,132 @@
         <link rel="stylesheet" href="/static/css/font-awesome.min.css"/>
         <link rel="stylesheet" href="/static/css/fix.css"/>
 
-        <title></title>
+        <style>
+
+body{
+    font-family: 'proxima-nova','Helvetica Neue',Arial,Helvetica,sans-serif;
+    background: #fafafa;
+    color: #4b4f54;
+}
+h1 {
+    font-size: 34px!important;
+    font-weight: 300;
+}
+h2 {
+    font-size: 17px!important;
+    font-weight: 300;
+}
+.mb-0 {
+    margin-bottom: 0;
+}
+.mt-0 {
+    margin-top: 0;
+}
+.mt-14 {
+    margin-top: 14px;
+}
+.mt-17 {
+    margin-top: 17px;
+}
+
+
+a, a:focus, a:hover {
+    color: #4b4f54;
+    text-decoration: none;transition: all 0.4s ease-in-out;
+}
+.header a:hover {
+    -webkit-background-clip: text;
+    color: #fff;
+    -webkit-text-fill-color: transparent;
+    background-image: -webkit-gradient(linear,left top,right top,from(#ea8711),to(#d96363));
+    background-image: -webkit-linear-gradient(left,#ea8711,#d96363,#73a6df,#9085fb,#52ca79);
+    transition: all 0.4s ease-in-out;
+}
+.navbar-default {
+    border-radius: 0;
+    border-right: none;
+    border-left: none;
+    border-top: none;
+}
+.profile-info {
+    color: #4b4f54;
+}
+
+.counts-links {
+    color: #4b4f54;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.instagram-image-thumb {
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+.instagram-image-thumb img {
+    width: 100%;
+    position: absolute;
+    left: 0;
+}
+.instagram-image-thumb:hover .img-hover {
+    opacity: .4;
+}
+.instagram-image-thumb .img-hover{
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #000000;
+    opacity: 0;
+    width: 100%;
+    height: 350px;
+    transition: all 0.4s ease-in-out;
+}
+.instagram-image-thumb:hover p.caption{
+    opacity: 1;
+   transform:scale(1,1);
+   transition-delay:0.3s;
+}
+.instagram-image-thumb p.caption{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 0;
+    padding: 2px 10px;
+    opacity: 0;
+    color: #fff;
+    max-width: 90%;
+    text-align: right;
+}
+
+.instagram-image-thumb:hover .likes-and-comments{
+    opacity: 1;
+}
+.instagram-image-thumb .likes-and-comments{
+    margin-top: 45%;
+    margin-bottom: 45%;
+    color: #fff;
+    text-align: center;
+    float: none;
+    opacity: 0;
+    font-size: 20px;
+   transform:scale(1,1);
+   transition-delay:0.3s;
+}
+.newfollowers, .oldfollowers {
+    height: 50px;
+}
+.nft {
+    color: #5cb85c;
+    border-bottom: 1px solid #4cae4c;
+}
+.uft {
+    color: #d9534f;
+    border-bottom: 1px solid #d43f3a;
+}
+.hide{
+}
+        </style>
+        <title>InstagramUnfollower by alpan</title>
     </head>
     <body>
 

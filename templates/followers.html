@@ -182,7 +182,7 @@ a, a:focus, a:hover {
                     <img src="{{ user.profile_picture }}" alt="{{ user.username }}, {{ user.bio }}" class="img-circle" style="margin-top: -7px;">
                 </div>
                 <div class="col-sm-4 profile-info">
-                    <h1 class="mt-0 mb-0"><a href="https://instagram.com/{{ user.username }}">{{ user.username }}</a></h1>
+                    <h1 class="mt-0 mb-0"><a target="_blank" href="https://instagram.com/{{ user.username }}">{{ user.username }}</a></h1>
                     <h2 class="mt-14 mb-0">{{ user.bio}}</h2>
                     <h2 class="mt-17 mb-0">
                         <a class="counts-links" href=""><b>{{ user.counts.media }}</b> gönderi</a>
@@ -207,7 +207,7 @@ a, a:focus, a:hover {
                 <div class="col-sm-6 col-md-4 text-center instagram-image-thumb">
                     <div style="overflow: hidden;position:relative;">
                         <img src="{{ img.thumb }}" alt=""/>
-                        <a href="{{ img.link }}" class="img-hover"></a>
+                        <a target="_blank" href="{{ img.link }}" class="img-hover"></a>
                         <div class="likes-and-comments center-block col-xs-5">
                             <div class="pull-left">
                                 <i class="fa fa-heart"></i> {{ img.likes }}
@@ -234,10 +234,10 @@ a, a:focus, a:hover {
                 olds = data.unfollowed;
 
             for (var i in news) {
-                $('.newfollowers').append('<img src="'+ news[i]['profile_picture'] +'" title="'+ news[i]['username'] +'" class="img-circle" style="width:30px">');
+                $('.newfollowers').append('<a target="_blank" href="https://instagram.com/'+ olds[i]['profile_picture'] +'"><img src="'+ news[i]['profile_picture'] +'" title="'+ news[i]['username'] +'"class="img-circle" style="width:30px"></a>');
             }
             for (var i in olds) {
-                $('.unfollowers').append('<img src="'+ olds[i]['profile_picture'] +'" title="'+ olds[i]['username'] +'" class="img-circle" style="width:30px">');
+                $('.unfollowers').append('<a target="_blank" href="https://instagram.com/'+ olds[i]['profile_picture'] +'"><img src="'+ olds[i]['profile_picture'] +'" title="'+ olds[i]['username'] +'" class="img-circle" style="width:30px"></a>');
             }
             $('.hede').fadeIn()
             $('.nft').append(' ('+ news.length +')');

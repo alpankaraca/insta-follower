@@ -204,7 +204,7 @@ def get_followers():
             print f.insta_id, f.username
             f.date = datetime.now()
             instagram_user.followers.pop(index)
-            unfollowed.append(f)
+            unfollowed.append(f.to_json())
     instagram_user.followers_ids = ids
     instagram_user.save()
 

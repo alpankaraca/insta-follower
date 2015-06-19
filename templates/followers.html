@@ -234,7 +234,7 @@ a, a:focus, a:hover {
                 olds = data.unfollowed;
 
             for (var i in news) {
-                $('.newfollowers').append('<a target="_blank" href="https://instagram.com/'+ olds[i]['profile_picture'] +'"><img src="'+ news[i]['profile_picture'] +'" title="'+ news[i]['username'] +'"class="img-circle" style="width:30px"></a>');
+                $('.newfollowers').append('<a target="_blank" href="https://instagram.com/'+ news[i]['profile_picture'] +'"><img src="'+ news[i]['profile_picture'] +'" title="'+ news[i]['username'] +'"class="img-circle" style="width:30px"></a>');
             }
             for (var i in olds) {
                 $('.unfollowers').append('<a target="_blank" href="https://instagram.com/'+ olds[i]['profile_picture'] +'"><img src="'+ olds[i]['profile_picture'] +'" title="'+ olds[i]['username'] +'" class="img-circle" style="width:30px"></a>');
